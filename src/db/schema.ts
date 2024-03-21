@@ -61,3 +61,15 @@ export const verificationTokens = pgTable(
     name: text("name"),
     
   });
+
+  export const room = pgTable("room", {
+
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    description: text("description"),
+    tags: text("tags").notNull(),
+    githubRepo: text("githubRepo"),
+  });
+  export type Room = typeof room.$inferSelect; // Room type for use in queries inferselect is for typescript to infer the type of the table
