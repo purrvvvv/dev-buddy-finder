@@ -13,6 +13,7 @@ import { Room } from "@/db/schema";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { get } from "http";
 import { getRooms } from "@/data-access/rooms";
+import { SplitTags, TagsList } from "@/components/tags-list";
 
 function RoomCard({room}:{room:Room}) {
   return(
@@ -26,7 +27,7 @@ function RoomCard({room}:{room:Room}) {
         {room.githubRepo && (
           <Link
             href={room.githubRepo}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 "
             target="_blank"  //for loading the link in new tab
             rel="noopener noreferrer" //same as above
           >
@@ -34,6 +35,7 @@ function RoomCard({room}:{room:Room}) {
             Github Link
           </Link>
         )}
+        <TagsList tags={SplitTags(room.tags)} />
       </CardContent>
       <CardFooter>
         <Button asChild>
