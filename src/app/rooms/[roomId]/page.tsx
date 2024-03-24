@@ -1,10 +1,11 @@
-import { SplitTags, TagsList } from "@/components/tags-list";
+import { TagsList } from "@/components/tags-list";
 import { Badge } from "@/components/ui/badge";
 import { getRoom } from "@/data-access/rooms";
 
 import Link from "next/link";
 import { DevFinderVideo } from "./video-player";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { splitTags } from "@/lib/utils";
 
 export default async function RoomPage(props: { params: { roomId: string } }) {
   const roomId = props.params.roomId;
@@ -40,7 +41,7 @@ export default async function RoomPage(props: { params: { roomId: string } }) {
 
           <p className="text-base text-gray-600">{room?.description}</p>
 
-          <TagsList tags={SplitTags(room.tags)} />
+          <TagsList tags={splitTags(room.tags)} />
         </div>
       </div>
     </div>

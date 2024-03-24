@@ -18,7 +18,7 @@ import Link from "next/link";
   
 function AccountDropDown() {
 const session = useSession();
-const islLoggedIn = session.data;
+const isLoggedIn = session.data;
 
   return (
     <DropdownMenu>
@@ -31,13 +31,16 @@ const islLoggedIn = session.data;
         {session.data?.user?.name}</Button></DropdownMenuTrigger>
     <DropdownMenuContent>
      
-      {islLoggedIn ? (
-      <DropdownMenuItem onClick={()=>signOut()}>
+      
+      <DropdownMenuItem onClick={()=>signOut(
+        {
+          callbackUrl: "/",
+        }
+      )}>
         <LogOutIcon className="mr-2"/> SignOut</DropdownMenuItem>
-      ):
-      <DropdownMenuItem onClick={()=>signIn("google")}>
-         <LogInIcon className="mr-2"/>SignIn</DropdownMenuItem>
-      }
+      
+     
+      
     </DropdownMenuContent>
   </DropdownMenu>
   
@@ -46,31 +49,48 @@ const islLoggedIn = session.data;
 
 export const Header = () => {
 const session = useSession();
-
+const isLoggedIn = !!session.data;
 
   return (
-<header className="bg-gray-100 py-4 dark:bg-gray-900 z-10 relative px-4">
-  <div className="flex justify-between items-center">
-  <Link
+    <header className="bg-gray-100 py-2 dark:bg-gray-900 z-10 relative">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link
           href="/"
           className="flex gap-2 items-center text-xl hover:underline"
         >
           <Image
             src="/icon.png"
-            width="50"
-            height="50"
+            width="60"
+            height="60"
             alt="the application icon of a magnifying glass"
           />
           DevFinder
         </Link>
-  
-    <div className="flex items-center gap-4">
-    <AccountDropDown/>
-     
-        <ModeToggle  />
-    </div>
-    </div>
-  </header>
-  );
 
+        <nav className="flex gap-8">
+          {isLoggedIn && (
+            <>
+              <Link className="hover:underline" href="/browse">
+                Browse
+              </Link>
+
+              <Link className="hover:underline" href="/your-rooms">
+                Your Rooms
+              </Link>
+            </>
+          )}
+        </nav>
+
+        <div className="flex items-center gap-4">
+          {isLoggedIn && <AccountDropDown />}
+          {!isLoggedIn && (
+            <Button onClick={() => signIn()} variant="link">
+              <LogInIcon className="mr-2" /> Sign In
+            </Button>
+          )}
+          <ModeToggle />
+        </div>
+      </div>
+    </header>
+  );
 }

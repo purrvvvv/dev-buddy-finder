@@ -11,9 +11,13 @@ import {
 } from "@/components/ui/card"
 import { Room } from "@/db/schema";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { get } from "http";
+
+
+import { TagsList } from "@/components/tags-list";
+import { SearchBar } from "./search-bar";
 import { getRooms } from "@/data-access/rooms";
-import { SplitTags, TagsList } from "@/components/tags-list";
+import { splitTags } from "@/lib/utils";
+
 
 function RoomCard({room}:{room:Room}) {
   return(
@@ -35,7 +39,7 @@ function RoomCard({room}:{room:Room}) {
             Github Link
           </Link>
         )}
-        <TagsList tags={SplitTags(room.tags)} />
+        <TagsList tags={splitTags(room.tags)} />
       </CardContent>
       <CardFooter>
         <Button asChild>
@@ -47,19 +51,27 @@ function RoomCard({room}:{room:Room}) {
 }
   
 
-
-export default async function Home() {
-
-  const rooms =  await getRooms();
+  export default async function Home({
+    searchParams,
+  }: {
+    searchParams: {
+      search: string;
+    };
+  }) {
+    const rooms = await getRooms(searchParams.search);
   return (
     <main className=" min-h-screen p-16 ">
 <div className="flex justify-between items-center mb-8">
 <h1 className="text-4xl ">FIND YOUR DEV BUDDY</h1>
+
     <Button asChild>
       <Link href="/create-room">Create Room</Link>
     </Button>
     
     </div>
+    <div className="mb-6">
+  <SearchBar/>
+</div>
     <div className="grid grid-cols-3 gap-4">
      {rooms.map((room) => {
         return <RoomCard room={room} key={room.id} />;
