@@ -8,48 +8,92 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { LogInIcon, LogOutIcon } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dropdown-menu";
+import { DeleteIcon, LogInIcon, LogOutIcon } from "lucide-react";
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
+import { deleteAccountAction } from "./actions";
 
-
-  
-function AccountDropDown() {
-const session = useSession();
-const isLoggedIn = session.data;
+function AccountDropdown() {
+  const session = useSession();
+  const [open, setOpen] = useState(false);
 
   return (
-    <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button variant={"link"}>
-      <Avatar className="mr-2">
+    <>
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently remove your
+              account and any data your have.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                await deleteAccountAction();
+                signOut({ callbackUrl: "/" });
+              }}
+            >
+              Yes, delete my account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant={"link"}>
+            <Avatar className="mr-2">
               <AvatarImage src={session.data?.user?.image ?? ""} />
-              <AvatarFallback>PP</AvatarFallback>
+              <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-        {session.data?.user?.name}</Button></DropdownMenuTrigger>
-    <DropdownMenuContent>
-     
-      
-      <DropdownMenuItem onClick={()=>signOut(
-        {
-          callbackUrl: "/",
-        }
-      )}>
-        <LogOutIcon className="mr-2"/> SignOut</DropdownMenuItem>
-      
-     
-      
-    </DropdownMenuContent>
-  </DropdownMenu>
-  
+
+            {session.data?.user?.name}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() =>
+              signOut({
+                callbackUrl: "/",
+              })
+            }
+          >
+            <LogOutIcon className="mr-2" /> Sign Out
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            <DeleteIcon className="mr-2" /> Delete Account
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }
 
-export const Header = () => {
-const session = useSession();
-const isLoggedIn = !!session.data;
+export function Header() {
+  const session = useSession();
+  const isLoggedIn = !!session.data;
 
   return (
     <header className="bg-gray-100 py-2 dark:bg-gray-900 z-10 relative">
@@ -82,7 +126,7 @@ const isLoggedIn = !!session.data;
         </nav>
 
         <div className="flex items-center gap-4">
-          {isLoggedIn && <AccountDropDown />}
+          {isLoggedIn && <AccountDropdown />}
           {!isLoggedIn && (
             <Button onClick={() => signIn()} variant="link">
               <LogInIcon className="mr-2" /> Sign In
